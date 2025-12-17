@@ -60,8 +60,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   async function signUp(
-    first: string,
-    last: string,
+    _first: string,
+    _last: string,
     email: string,
     password: string
   ) {
@@ -75,7 +75,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return user;
       })
       .catch((error) => {
-        const errorCode = error.code;
         const errorMessage = error.message;
         switch (true) {
           case errorMessage.includes("auth/email-already-in-use"):

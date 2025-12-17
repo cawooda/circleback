@@ -1,9 +1,8 @@
 import { Routes, Route, Outlet } from "react-router-dom";
 import "./App.css";
-import { Box, Button, Container, Flex, Text } from "@chakra-ui/react";
+import { Container, Flex, Text } from "@chakra-ui/react";
 
 import LoginForm from "./components/LoginForm";
-import SignupForm from "./components/SignupForm";
 import Home from "./pages/Home";
 
 import { AuthProvider, useAuth } from "@/context/AuthContext";
@@ -11,7 +10,7 @@ import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { ColorModeButton } from "@/components/ui/color-mode";
 
 function App() {
-  const { user, loading, signOutUser } = useAuth();
+  const { loading } = useAuth();
   if (loading) return <>Loading...</>;
   return (
     <>

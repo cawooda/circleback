@@ -16,6 +16,15 @@ import { Link } from "react-router-dom";
 
 // Define types for form fields and data
 
+type SignupFormFields = {
+  [key: string]: {
+    label: string;
+    type: string;
+    placeholder?: string;
+    required?: boolean;
+  };
+};
+
 type SignupFormData = {
   firstName: string;
   lastName: string;
@@ -82,7 +91,7 @@ function SignupForm() {
 
   const handleFormSubmit = async (event: any) => {
     event.preventDefault();
-    const signUpResult = await signUp(fields.email, fields.password);
+    const signUpResult = await signUp("", "", fields.email, fields.password);
     if (signUpResult && "error" in signUpResult && signUpResult.error) {
       console.log("Sorry:", signUpResult.error);
       setSignUpError(signUpResult.error);
@@ -102,8 +111,7 @@ function SignupForm() {
       <Image src={Logo} alt="Logo" width="10vw" pb={3} />
       <Heading mb={6}>Sign Up</Heading>
       <form key="signup-form" onSubmit={handleFormSubmit}>
-        {Object.entries(formFieldsConfig).map(([name, config]) => {
-          console.log(name, config);
+        {Object.entries(formFieldsConfig).map(([name, config]: [string, any]) => {
           if (name !== "submit") {
             return (
               <Field.Root key={name} mb={4}>
