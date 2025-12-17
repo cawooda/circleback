@@ -1,73 +1,162 @@
-# React + TypeScript + Vite
+# NDIS Service Management Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React + TypeScript application connecting people with disabilities to high-quality service providers. This platform streamlines service agreement management, with planned features for shift tracking and invoicing.
 
-Currently, two official plugins are available:
+## Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This application facilitates the connection between NDIS participants (customers) and registered service providers, managing the full lifecycle of service agreements including terms, schedules, and compliance documentation.
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **React** with TypeScript for type-safe component development
+- **Vite** for fast development and optimized production builds
+- **Firebase** for authentication and data persistence
+- **Chakra UI** for accessible, consistent UI components
 
-## Expanding the ESLint configuration
+## Core Type System
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+The application is built around a comprehensive TypeScript type system defined in `src/AppTypes.ts`, ensuring type safety and data consistency across the platform.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### User & Profile Types
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+**AppUser**: Firebase-authenticated user with personal identifier
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```typescript
+AppUser = FirebaseUser & { pid: string; emailVerified: boolean }
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+**UserProfile**: Basic user information
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- PID (Personal Identifier)
+- First/Last name and PreferredName
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+**CustomerProfile**: NDIS participant profile
+
+- NDIS Number for service eligibility
+- PlanManager details for funding coordination
+- Contact information (Address, Phone)
+
+**ProviderProfile**: Service provider business profile
+
+- ABN (Australian Business Number)
+- Business Name and contact details
+- Physical Address
+
+### Service Agreement Types
+
+**Product**: NDIS service line items
+
+- Name and Code (aligned with NDIS pricing)
+- MaxPrice (NDIS price guide limit)
+
+**Service**: Delivered service instance
+
+- Links Provider to Product
+- Actual Price (may be below MaxPrice)
+
+**ServiceSchedule**: Recurring service delivery plan
+
+- Service details (what, who, how much)
+- Units and Frequency
+- Period ('Daily' | 'Weekly' | 'Monthly')
+- Start and End dates
+
+**ServiceAgreement**: Complete service contract
+
+- Customer and Provider profiles
+- Array of ServiceSchedule items
+- Terms and Conditions
+- Digital signatures (Provider and Customer)
+- Tracking status (IsSent)
+
+### Supporting Types
+
+**Address**: Standardized address structure
+
+- Number, Street, City, Postcode
+
+**PlanManager**: NDIS plan manager details
+
+- Contact information
+- Dedicated invoices email
+- Physical address
+
+**TermsAndConditions**: Legal agreement sections
+
+- Heading and Paragraph content
+- Structured as arrays for flexible agreement composition
+
+## Project Structure
+
 ```
+src/
+├── AppTypes.ts           # Core type definitions
+├── components/
+│   ├── Claims.tsx        # User claims management
+│   ├── LoginForm.tsx     # Authentication
+│   ├── SignupForm.tsx    # User registration
+│   └── ui/               # Reusable UI components
+├── context/
+│   └── AuthContext.tsx   # Firebase authentication state
+├── lib/
+│   └── firebase.ts       # Firebase configuration
+└── pages/
+    └── Home.tsx          # Main landing page
+```
+
+## Future Roadmap
+
+1. **Shift Tracking**: Log and verify service delivery
+2. **Invoicing**: Generate NDIS-compliant invoices from service schedules
+3. **Reporting**: Service utilization and budget tracking
+4. **Compliance**: Document management and audit trails
+
+## Development
+
+```bash
+npm install
+npm run dev
+```
+
+Build for production:
+
+```bash
+npm run build
+```
+
+## Firebase Functions (Apollo GraphQL)
+
+- Function name: `graphql` (Firebase HTTPS function)
+- Stack: Apollo Server v4 on Express 4, exposed via `/graphql`
+- Health: GET `/` on the function returns status and endpoint metadata
+
+### Run emulators (functions + hosting)
+
+```bash
+cd functions
+npm run build
+cd ..
+firebase emulators:start --only functions,hosting
+```
+
+### Test endpoints
+
+- Direct (Functions emulator):
+
+  ```bash
+  curl -X POST http://127.0.0.1:5001/circle-ced55/us-central1/graphql \
+      -H "Content-Type: application/json" \
+      -d '{"query":"{ hello }"}'
+  ```
+
+  Expected: `{"data":{"hello":"Hello from Firebase + Apollo (working!)"}}`
+
+- Hosting rewrite (if enabled at `/api/graphql` in firebase.json):
+
+  ```bash
+  curl -X POST http://127.0.0.1:5022/api/graphql \
+      -H "Content-Type: application/json" \
+      -d '{"query":"{ hello }"}'
+  ```
+
+- Browser playground: http://127.0.0.1:5001/circle-ced55/us-central1/graphql and run `query { hello }`

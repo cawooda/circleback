@@ -1,0 +1,55 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+
+# Node / npm / pnpm / yarn
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Vite / build outputs
+/dist/
+/.vite/
+.vite-cache/
+
+# TypeScript
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Coverage / testing
+coverage/
+*.lcov
+
+# Env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Firebase (local config/state)
+.firebase/
+.firebaserc.local
+
+# VS Code
+.vscode/
+.history/
+
+# IDEs
+.idea/
+*.iml
+
+# Misc
+.tmp/
+.temp/
+cache/

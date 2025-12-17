@@ -1,4 +1,4 @@
-import Claims from "@/components/claims";
+import Claims from "../components/Claims";
 import { Flex } from "@chakra-ui/react";
 
 function Home() {
