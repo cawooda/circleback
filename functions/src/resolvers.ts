@@ -8,7 +8,7 @@ const db = getFirestore(); // Get a Firestore instance
 
 export const resolvers = {
   Query: {
-    users: async () => {
+    getUsers: async () => {
       const usersRef = db.collection("users");
       const snapshot = await usersRef.get();
       const users: any[] = [];
@@ -20,7 +20,10 @@ export const resolvers = {
       });
       return users;
     },
-    getMe: async (_: any, args: { id: string }) => {
+    getMe: async (_: any, args: { id: string }, context: any) => {
+      console.log(context);
+      console.log("Getting user with ID:", args.id);
+      console.log(args);
       const userRef = doc(db, "users", args.id);
       const userSnap = await getDoc(userRef);
       if (userSnap.exists()) {

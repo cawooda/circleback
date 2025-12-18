@@ -8,7 +8,7 @@ import { expressMiddleware } from "@as-integrations/express4";
 import { json } from "body-parser";
 
 import { typeDefs } from "./typedefs";
-import { resolvers } from "./resovlers";
+import { resolvers } from "./resolvers";
 
 const app = express();
 
