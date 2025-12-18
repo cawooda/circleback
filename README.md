@@ -128,7 +128,19 @@ npm run build
 
 - Function name: `graphql` (Firebase HTTPS function)
 - Stack: Apollo Server v4 on Express 4, exposed via `/graphql`
-- Health: GET `/` on the function returns status and endpoint metadata
+- Local emulator setup using Firebase Emulator Suite
+- Testing via curl or Apollo Playground
+- Hosting rewrite option for `/api/graphql`
+- Apollo Playground available at function URL
+- Sample query:
+  `type Query {
+getMe: AppUser!
+getUsers: [AppUser]
+}`
+
+## Local Development with Firebase Emulator
+
+Issues with Firebase Emulator Suite and Apollo Server v4 are common; ensure you have the latest Firebase CLI installed.
 
 ### Run emulators (functions + hosting)
 
@@ -160,3 +172,14 @@ firebase emulators:start --only functions,hosting
   ```
 
 - Browser playground: http://127.0.0.1:5001/circle-ced55/us-central1/graphql and run `query { hello }`
+
+## Issue Reporting
+
+functions % firebase emulators:start --only functions,hosting
+i emulators: Starting emulators: functions, hosting
+⚠ functions: The following emulators are not running, calls to these services from the Functions emulator will affect production: apphosting, auth, firestore, database, pubsub, storage, dataconnect
+i hosting[circle-ced55]: Serving hosting files from: public
+✔ hosting[circle-ced55]: Local server: http://127.0.0.1:5022
+i functions: Watching "/Users/andrewcawood/dev-2/circleback/functions" for Cloud Functions...
+✔ functions: Using node@24 from host.
+⬢ functions: Failed to load function definition from source: FirebaseError: Failed to load environment variables from .env.
