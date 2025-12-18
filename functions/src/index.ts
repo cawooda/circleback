@@ -1,7 +1,5 @@
 // working example of Firebase Function with Apollo Server
-//
 
-// functions/src/index.ts
 import * as functions from "firebase-functions";
 import express from "express";
 import cors from "cors";
@@ -9,17 +7,8 @@ import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@as-integrations/express4";
 import { json } from "body-parser";
 
-const typeDefs = `#graphql
-  type Query {
-    hello: String
-  }
-`;
-
-const resolvers = {
-  Query: {
-    hello: () => "Hello from Firebase + Apollo (working!)",
-  },
-};
+import { typeDefs } from "./typedefs";
+import { resolvers } from "./resovlers";
 
 const app = express();
 
