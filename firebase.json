@@ -47,7 +47,10 @@
     },
     "singleProjectMode": true,
     "apphosting": {
-      "enabled": false
+      "enabled": false,
+      "port": 5002,
+      "rootDirectory": "./",
+      "startCommand": "npm run dev"
     }
   },
   "remoteconfig": {
@@ -61,7 +64,11 @@
   },
   "hosting": {
     "public": "public",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
     "rewrites": [
       {
         "source": "/api/graphql",

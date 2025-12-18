@@ -1,7 +1,10 @@
 export const typeDefs = `#graphql
   type AppUser {
-    pid: String!
-    emailVerified: Boolean!
+    email: String!
+    firstName: String!
+    lastName: String!
+    isAdmin: Boolean!
+    UID: String
   }
     
   type Address {
@@ -10,10 +13,10 @@ export const typeDefs = `#graphql
     City: String!
     Postcode: String!
   }
-    type UserProfile {
-    PID: String!
-    First: String!
-    Last: String!
+    
+  type UserProfile {
+    appUser: AppUser!
+    
     PreferredName: String!
 }
 
@@ -87,4 +90,13 @@ export const typeDefs = `#graphql
     getMe: AppUser!
     getUsers: [AppUser]
     }  
+
+    type Mutation {
+    createUserProfile(
+        pid: String!
+        first: String!
+        last: String!
+        preferredName: String!
+    ): UserProfile
+    }
 `;

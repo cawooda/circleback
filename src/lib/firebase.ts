@@ -24,4 +24,5 @@ if (window.location.hostname === "localhost") {
   connectFirestoreEmulator(db, "localhost", 8080);
   connectAuthEmulator(auth, "http://localhost:9099");
   // ... connect other emulators (e.g., connectStorageEmulator)
-}
+} else
+  throw new Error("Not connecting to emulators in non-localhost environment");
