@@ -17,15 +17,17 @@ import { ApolloServer } from "@apollo/server";
 // Express 4 integration adapter for Apollo Server v4
 // This replaces the deprecated apollo-server-express package
 import { expressMiddleware } from "@as-integrations/express4";
+import { getAuth } from "firebase-admin/auth";
+import { initializeApp, getApps } from "firebase-admin/app";
 
 // Body parser middleware for parsing JSON request bodies
 import { json } from "body-parser";
 
 // GraphQL type definitions (schema) defining the structure of our GraphQL API
-import { typeDefs } from "./typedefs";
+import { typeDefs } from "./grapghql/typedefs";
 
 // GraphQL resolvers implementing the logic for each query/mutation/field
-import { resolvers } from "./resolvers";
+import { resolvers } from "./grapghql/resolvers";
 
 /**
  * Express application instance
@@ -90,9 +92,60 @@ app.use(json());
  * The expressMiddleware converts Apollo Server v4's request handling
  * into Express-compatible middleware
  */
+
+// app.use(async (req, res, next) => {
+//   await start();
+//   return expressMiddleware(server)(req, res, next);
+// });
+
 app.use(async (req, res, next) => {
   await start();
-  return expressMiddleware(server)(req, res, next);
+  // Ensure Firebase Admin is initialized once
+  if (!getApps().length) {
+    // Initialize Admin SDK with explicit projectId to ensure audience matches
+    //receives an options object with at least the `projectId` field.
+    // in order to make use of the emulator or when the environment
+    // does not provide default credentials.
+    // the priority is Firebase project settings > GCLOUD_PROJECT env var > default "circle-ced55"
+
+    initializeApp({
+      projectId:
+        process.env.FIREBASE_PROJECT_ID ||
+        process.env.GCLOUD_PROJECT ||
+        "circle-ced55",
+    });
+  }
+
+  // Build Apollo context with verified Firebase user (if present)
+  return expressMiddleware(server, {
+    context: async ({ req }) => {
+      // Headers in Node are always lowercase; prefer 'authorization'
+      const authHeader = (req.headers["authorization"] || "") as string;
+      // Obtain the token from the "Bearer <token>" format
+      // This extracts the token part after "Bearer "
+      const headerToken =
+        typeof authHeader === "string" && authHeader.startsWith("Bearer ")
+          ? // Extract token substring
+            // Remove "Bearer " prefix to get the actual token and default to undefined if not present
+            authHeader.substring("Bearer ".length)
+          : undefined;
+      // Debug: show token presence (not the full token in production logs)
+      console.log("headerToken", headerToken ? "present" : "missing");
+      const rawToken = (req.headers.token as string | undefined) || headerToken;
+
+      let user: any = null;
+      if (rawToken) {
+        try {
+          user = await getAuth().verifyIdToken(rawToken);
+        } catch (e) {
+          console.log("Error verifying Firebase ID token:", e);
+          user = null;
+        }
+      }
+
+      return { token: rawToken, user };
+    },
+  })(req, res, next);
 });
 
 /**

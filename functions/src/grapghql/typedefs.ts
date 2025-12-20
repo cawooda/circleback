@@ -16,7 +16,6 @@ export const typeDefs = `#graphql
     
   type UserProfile {
     appUser: AppUser!
-    
     PreferredName: String!
 }
 
