@@ -15,6 +15,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 
@@ -26,3 +27,7 @@ if (window.location.hostname === "localhost") {
   // ... connect other emulators (e.g., connectStorageEmulator)
 } else
   throw new Error("Not connecting to emulators in non-localhost environment");
+
+// For backend (Node.js) environment, you can set the following environment variables:
+// export FIREBASE_FIRESTORE_EMULATOR_HOST="127.0.0.1:8080"
+// export FIREBASE_AUTH_EMULATOR_HOST="127.0.0.1:9099"
